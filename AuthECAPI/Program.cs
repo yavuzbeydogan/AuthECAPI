@@ -1,6 +1,9 @@
 using AuthECAPI.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.AspNetCore.Mvc; // <-- Eksik
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -32,7 +35,35 @@ app.UseAuthorization();
 app.MapControllers(); ;
 
 app
-    .MapGroup("/apai")
+    .MapGroup("/api")
     .MapIdentityApi<AppUser>();
 
+app.MapPost("/api/signup", async (
+    UserManager<AppUser> userManager,
+    [FromBody] UserRegistrationModel userRegistrationModel
+    ) =>
+{
+AppUser user = new AppUser()
+{
+UserName = userRegistrationModel.Email,
+Email = userRegistrationModel.Email,
+FullName = userRegistrationModel.FullName,
+};
+var result = await userManager.CreateAsync(
+    user,
+    userRegistrationModel.Password);
+
+if (result.Succeeded)
+return Results.Ok(result);
+else
+return Results.BadRequest(result);
+});
+
 app.Run();
+
+public class UserRegistrationModel
+{
+    public string Email { get; set; }
+    public string Password { get; set; }
+    public string FullName { get; set; }
+}
