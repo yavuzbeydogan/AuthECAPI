@@ -6,6 +6,6 @@ namespace AuthECAPI.Models
     {
         [PersonalData]
         [Column(TypeName = "nvarchar(150)")]
-        public string FullNameee { get; set; }
+        public string FullName{ get; set; }
     }
 }
