@@ -38,7 +38,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger(); 
     app.UseSwaggerUI();
 }
-#region Config. CORS
+#region ConfigCORS
 app.UseCors(options =>
     options.WithOrigins(
         "http://10.211.55.4:4200",
