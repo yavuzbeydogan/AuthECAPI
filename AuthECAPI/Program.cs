@@ -113,10 +113,14 @@ app.MapPost("/api/signin", async (
             {
                 new Claim("UserID",user.Id.ToString())
             }),
-            Expires = DateTime.UtcNow.AddMinutes(10),
+            Expires = DateTime.UtcNow.AddDays(10),
             SigningCredentials = new SigningCredentials(
                 signInKey, SecurityAlgorithms.HmacSha256Signature)
         };
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var securityToken = tokenHandler.CreateToken(tokenDescriptor);
+        var token = tokenHandler.WriteToken(securityToken);
+        return Results.Ok(new { token});
     }
     else 
         return Results.BadRequest(new { message = "Username or password is incorrect." });
