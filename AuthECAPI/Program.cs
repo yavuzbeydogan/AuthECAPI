@@ -10,6 +10,7 @@ using System.Security.Claims;
 using System.Text; // <-- Eksik
 
 var builder = WebApplication.CreateBuilder(args);
+builder.WebHost.UseUrls("http://0.0.0.0:5084");
 
 // Add services to the container.
 
