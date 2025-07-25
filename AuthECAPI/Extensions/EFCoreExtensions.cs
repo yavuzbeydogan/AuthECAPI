@@ -12,6 +12,7 @@ namespace AuthECAPI.Extensions
         {
             services.AddDbContext<AppDbContext>(options =>
                     options.UseSqlServer(config.GetConnectionString("DevDB")));
+            return services;
         }
 
     }

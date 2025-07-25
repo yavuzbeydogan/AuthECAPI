@@ -1,4 +1,6 @@
-﻿using System.Runtime.CompilerServices;
+﻿using AuthECAPI.Models;
+using Microsoft.EntityFrameworkCore;
+using System.Runtime.CompilerServices;
 
 namespace AuthECAPI.Extensions
 {
@@ -16,5 +18,13 @@ namespace AuthECAPI.Extensions
                 .AllowAnyHeader());
             return app;
         }
+        public static IServiceCollection AddAppConfig(
+            this IServiceCollection services,
+            IConfiguration config)
+        {
+            services.Configure<AppSettings>(config.GetSection("AppSettings"));
+            return services;
+        }
+
     }
 }
