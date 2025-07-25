@@ -1,40 +1,25 @@
 using AuthECAPI.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using AuthECAPI.Extensions;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text; // <-- Eksik
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.UseUrls("http://0.0.0.0:5084");
-
 // Add services to the container.
-
 builder.Services.AddControllers(); ;
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
-// Services from Identity Core
-builder.Services
-    .AddIdentityApiEndpoints<AppUser>()
-    .AddEntityFrameworkStores<AppDbContext>();
-
-
-builder.Services.Configure<IdentityOptions>(options =>
-{
-    options.Password.RequireDigit = false;
-    options.Password.RequireLowercase = false;
-    options.Password.RequireUppercase = false;
-    options.User.RequireUniqueEmail = true;
-});
-
-builder.Services.AddDbContext<AppDbContext>(options => 
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DevDB")));
+builder.Services.AddSwaggerExplorer()
+                .InjectDbContext(builder.Configuration)
+                .AddIdentityHandlersAndStores()
+                .ConfigureIdentityOptions()
+                .AddIdentityAuth(builder.Configuration);
 
 builder.Services.AddAuthentication(x=>
 {
@@ -54,23 +39,9 @@ builder.Services.AddAuthentication(x=>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger(); 
-    app.UseSwaggerUI();
-}
-#region ConfigCORS
-app.UseCors(options =>
-    options.WithOrigins(
-        "http://10.211.55.4:4200",
-        "http://localhost:4200"
-    )
-    .AllowAnyMethod()
-    .AllowAnyHeader());
-#endregion
-app.UseAuthentication();
-app.UseAuthorization();
+app.ConfigureSwaggerExplorer().
+    ConfigureCORS(builder.Configuration)
+    .AddIdentityAuthMiddlewares();
 
 app.MapControllers(); ;
 
